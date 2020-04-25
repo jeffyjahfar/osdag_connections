@@ -15,7 +15,7 @@ from OCC.BRepFill import BRepFill_Filling
 from OCC.GeomAbs import GeomAbs_C0
 from OCC.GeomAPI import GeomAPI_PointsToBSpline
 from OCC.TColgp import TColgp_Array1OfPnt
-from OCC._Quantity import Quantity_NOC_BLACK
+from OCC.Quantity import Quantity_NOC_BLACK
 
     
 def make_edge(*args):

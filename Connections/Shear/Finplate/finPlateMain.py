@@ -8,14 +8,14 @@ from PyQt4.QtCore import QString, pyqtSignal
 from OCC.TopoDS import topods, TopoDS_Shape
 from OCC.gp import gp_Pnt
 from nutBoltPlacement import NutBoltArray
-from OCC import VERSION, BRepTools, OSD
+from OCC import VERSION, BRepTools
 from ui_finPlate import Ui_MainWindow
 from model import *
 from finPlateCalc import finConn
 import yaml
 import pickle
 from OCC.BRepAlgoAPI import BRepAlgoAPI_Fuse
-from OCC._Quantity import Quantity_NOC_RED,Quantity_NOC_BLUE1,Quantity_NOC_SADDLEBROWN
+from OCC.Quantity import Quantity_NOC_RED,Quantity_NOC_BLUE1,Quantity_NOC_SADDLEBROWN
 from ISection import ISection
 from OCC.Graphic3d import Graphic3d_NOT_2D_ALUMINUM
 from weld import  Weld
@@ -24,7 +24,7 @@ from bolt import Bolt
 from nut import Nut 
 import os.path
 from utilities import osdagDisplayShape
-from OCC.Display.pyqt4Display import qtViewer3d
+from OCC.Display.qtDisplay import qtViewer3d
 from colWebBeamWebConnectivity import ColWebBeamWeb
 from colFlangeBeamWebConnectivity import ColFlangeBeamWeb
 from OCC import IGESControl
@@ -294,15 +294,17 @@ class MainController(QtGui.QMainWindow):
         loc = self.ui.comboConnLoc.currentText()
         if loc == "Column flange-Beam web":
             
-            pixmap = QtGui.QPixmap(":/newPrefix/images/beam2.jpg")
-            pixmap.scaledToHeight(50)
-            pixmap.scaledToWidth(60)
+            #pixmap = QtGui.QPixmap(":/newPrefix/images/beam2.jpg")
+            pixmap = QtGui.QPixmap(":/newPrefix/images/colF2.png")
+            pixmap.scaledToHeight(60)
+            pixmap.scaledToWidth(50)
             self.ui.lbl_connectivity.setPixmap(pixmap)
             #self.ui.lbl_connectivity.show()
         elif(loc == "Column web-Beam web"):
-            picmap = QtGui.QPixmap(":/newPrefix/images/beam.jpg")
-            picmap.scaledToHeight(50)
-            picmap.scaledToWidth(60)
+            #picmap = QtGui.QPixmap(":/newPrefix/images/beam.jpg")
+            picmap = QtGui.QPixmap(":/newPrefix/images/colW3.png")
+            picmap.scaledToHeight(60)
+            picmap.scaledToWidth(50)
             self.ui.lbl_connectivity.setPixmap(picmap)
         else:
             self.ui.lbl_connectivity.hide()
@@ -430,7 +432,7 @@ class MainController(QtGui.QMainWindow):
         #QtGui.QMessageBox.about(self,'Information',"File saved")
        
     
-    
+    ################
     def save_yaml(self,outObj,uiObj):
         '''(dictiionary,dictionary) -> NoneType
         Saving input and output to file in following format.
@@ -620,7 +622,7 @@ class MainController(QtGui.QMainWindow):
         This method displaying Design messages(log messages)to textedit widget.
         '''
         
-        afile = QtCore.QFile('./Connections/Shear/Finplate/fin.log')
+        afile = QtCore.QFile('./fin.log')
         
         if not afile.open(QtCore.QIODevice.ReadOnly):#ReadOnly
             QtGui.QMessageBox.information(None, 'info', afile.errorString())
@@ -640,11 +642,11 @@ class MainController(QtGui.QMainWindow):
         since python comes with Tk included, but that PySide or PyQt4
         is much preferred
         """
-        try:
-            from PySide import QtCore, QtGui
-            return 'pyside'
-        except:
-            pass
+#         try:
+#             from PySide import QtCore, QtGui
+#             return 'pyside'
+#         except:
+#             pass
         try:
             from PyQt4 import QtCore, QtGui
             return 'pyqt4'
@@ -675,11 +677,8 @@ class MainController(QtGui.QMainWindow):
         if USED_BACKEND in ['pyqt4', 'pyside']:
             if USED_BACKEND == 'pyqt4':
                 from PyQt4 import QtCore, QtGui, QtOpenGL
-                from OCC.Display.pyqt4Display import qtViewer3d
-            elif USED_BACKEND == 'pyside':
-                from PySide import QtCore, QtGui, QtOpenGL
-                from OCC.Display.pysideDisplay import qtViewer3d
-    
+                from OCC.Display.qtDisplay import qtViewer3d
+            
         self.ui.modelTab = qtViewer3d(self)
         #self.ui.model2dTab = qtViewer3d(self)
         
@@ -1003,7 +1002,10 @@ class MainController(QtGui.QMainWindow):
         final_model = cadlist[0]
         for model in cadlist[1:]:
             final_model = BRepAlgoAPI_Fuse(model,final_model).Shape()
-        return final_model           
+        return final_model 
+     
+    
+             
          
     # Export to IGS,STEP,STL,BREP
     def save3DcadImages(self):
@@ -1127,7 +1129,6 @@ class MainController(QtGui.QMainWindow):
                 self.fuse_model = self.create2Dcad(self.connectivity)
             self.display2DModel( self.fuse_model,"Front")
             
-            #self.mkAndSaveSvg(self.connectivity)
             self.call2D_Drawing()
         else:
             self.display.EraseAll()
@@ -1136,15 +1137,14 @@ class MainController(QtGui.QMainWindow):
                 self.connectivity =  self.create3DColFlangeBeamWeb()
             if self.fuse_model == None:
                 self.fuse_model = self.create2Dcad(self.connectivity)
-            self.display2DModel( self.fuse_model,"Left")        
+            self.display2DModel( self.fuse_model,"Left") 
+            self.call2D_Drawing()       
         
-    def mkAndSaveSvg(self, connectivity):
-        conXZ = ColWebBeamWebXZ(connectivity)
-        conXZDwg = conXZ.mkOSDAGDrawing2D('test.svg')
-        conXZDwg.saveSvg()   
+    
              
     def call2D_Drawing(self):
         uiObj = self.getuser_inputs()
+        
         resultObj = finConn(uiObj)
         dictbeamdata  = self.fetchBeamPara()
         dictcoldata = self.fetchColumnPara()
@@ -1229,7 +1229,7 @@ def set_osdaglogger():
     logger.setLevel(logging.DEBUG)
  
     # create the logging file handler
-    fh = logging.FileHandler("./Connections/Shear/Finplate/fin.log", mode="a")
+    fh = logging.FileHandler("./fin.log", mode="a")
     
     #,datefmt='%a, %d %b %Y %H:%M:%S'
     #formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -1265,42 +1265,6 @@ def launchFinPlateController(osdagMainWindow):
      
     #sys.exit(app.exec_())
 
-class ColWebBeamWebXZ():
-    
-    def __init__(self, connectivity):
-        self.A = (0, 0)
-        self.B = (0, 80)
-        self.C = (20, 80)
-        self.D = (20, 0) 
-        self.E = (7, 80)
-        self.F = (13, 80)
-        self.G = (13, 0)
-        self.H = (7, 0)
-        
-    def mkOSDAGDrawing2D(self, fileName):
-        
-        dwg = OSDAGDrawing2D(fileName)
-        dwg.line()
-        dwg.add(dwg.line(self.A, self.B,stroke='blue', stroke_width =2.0, stroke_linecap='square'))
-        dwg.add(dwg.line(self.B, self.C, stroke='blue', stroke_width =2.0, stroke_linecap='square'))
-        dwg.add(dwg.line(self.C, self.D, stroke='blue', stroke_width =2.0, stroke_linecap='square'))
-        #dwg.add(dwg.line(self.D, self.E, stroke=svgwrite.rgb(0, 0, 255, '%')))
-        dwg.add(dwg.line(self.D, self.A, stroke='blue', stroke_width =2.0, stroke_linecap='square'))
-        dwg.add(dwg.line(self.E, self.H, stroke='red', stroke_width =1.2,stroke_linecap ='butt' ))
-        dwg.add(dwg.line(self.F, self.G, stroke='red', stroke_width =2.0, stroke_linecap='square'))
-        #dwg.add(dwg.text('Test', insert=(0, 0.2), fill='red'))
-        return dwg
-
-    
-class OSDAGDrawing2D(svgwrite.Drawing):
-    
-    def __init__(self, fileName):
-        svgwrite.Drawing.__init__(self, fileName, profile = 'tiny')
-    
-    def saveSvg(self):
-        #dwg.add(dwg.line((0, 0), (10, 0), stroke=svgwrite.rgb(10, 10, 16, '%')))
-        #dwg.add(dwg.text('Test', insert=(0, 0.2), fill='red'))
-        self.save()
 
 if __name__ == '__main__':
     #launchFinPlateController(None)

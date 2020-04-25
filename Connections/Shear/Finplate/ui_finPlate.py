@@ -2,8 +2,7 @@
 
 # Form implementation generated from reading ui file 'finPlate.ui'
 #
-# Created: Tue Aug 11 16:24:42 2015
-#      by: PyQt4 UI code generator 4.10.4
+# Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -219,7 +218,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.splitter)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1332, 28))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1332, 25))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -274,6 +273,7 @@ class Ui_MainWindow(object):
         font.setWeight(50)
         self.comboConnLoc.setFont(font)
         self.comboConnLoc.setObjectName(_fromUtf8("comboConnLoc"))
+        self.comboConnLoc.addItem(_fromUtf8(""))
         self.comboConnLoc.addItem(_fromUtf8(""))
         self.comboConnLoc.addItem(_fromUtf8(""))
         self.comboConnLoc.addItem(_fromUtf8(""))
@@ -1034,7 +1034,7 @@ class Ui_MainWindow(object):
         self.comboWldSize.addItem(_fromUtf8(""))
         self.comboWldSize.addItem(_fromUtf8(""))
         self.lbl_connectivity = QtGui.QLabel(self.dockWidgetContents)
-        self.lbl_connectivity.setGeometry(QtCore.QRect(180, 70, 60, 50))
+        self.lbl_connectivity.setGeometry(QtCore.QRect(190, 70, 81, 51))
         self.lbl_connectivity.setScaledContents(True)
         self.lbl_connectivity.setObjectName(_fromUtf8("lbl_connectivity"))
         self.label_9 = QtGui.QLabel(self.dockWidgetContents)
@@ -1513,6 +1513,7 @@ class Ui_MainWindow(object):
         self.comboConnLoc.setItemText(0, _translate("MainWindow", "Select Connectivity", None))
         self.comboConnLoc.setItemText(1, _translate("MainWindow", "Column flange-Beam web", None))
         self.comboConnLoc.setItemText(2, _translate("MainWindow", "Column web-Beam web", None))
+        self.comboConnLoc.setItemText(3, _translate("MainWindow", "Beam-Beam", None))
         self.txtFu.setPlaceholderText(_translate("MainWindow", "000.0", None))
         self.label.setText(_translate("MainWindow", "<html><head/><body><p>Connecting members</p></body></html>", None))
         self.label_4.setText(_translate("MainWindow", "<html><head/><body><p>Connectivity *</p></body></html>", None))
@@ -1687,3 +1688,13 @@ class Ui_MainWindow(object):
         self.actionQuit_fin_plate_design.setText(_translate("MainWindow", "Quit fin plate design", None))
 
 import icons_rc
+
+if __name__ == "__main__":
+    import sys
+    app = QtGui.QApplication(sys.argv)
+    MainWindow = QtGui.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
+
